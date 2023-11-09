@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:web_socket_channel/io.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,8 +21,28 @@ class FormularioScreen extends StatefulWidget {
 }
 
 class _FormularioScreenState extends State<FormularioScreen> {
+  String _serverIp = 'localhost';
+  String _serverPort = '8888';
+
+  IOWebSocketChannel? _channel;
+
   TextEditingController ipController = TextEditingController();
   TextEditingController mensajeController = TextEditingController();
+
+  void _connectToServer() {
+    String server = "ws://$_serverIp:$_serverPort";
+    _channel = IOWebSocketChannel.connect(server);
+
+    _channel!.stream.listen(
+      (message) {
+        final data = jsonDecode(message);
+      },
+    );
+  }
+
+  _disconnectFromServer() {
+    _channel!.sink.close();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,16 +74,32 @@ class _FormularioScreenState extends State<FormularioScreen> {
               ),
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Aqui se puede controlar que hacer con el texto de los campos
-                final ip = ipController.text;
-                final mensaje = mensajeController.text;
-                // Por ejemplo, imprimirlos en consola
-                print('IP: $ip');
-                print('Mensaje: $mensaje');
-              },
-              child: Text('Enviar'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    // Aqui se puede controlar que hacer con el texto de los campos
+                    final ip = ipController.text;
+                    final mensaje = mensajeController.text;
+                    // Por ejemplo, imprimirlos en consola
+                    print('IP: $ip');
+                    print('Mensaje: $mensaje');
+                  },
+                  child: Text('Enviar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // Aqui se puede controlar que hacer con el texto de los campos
+                    final ip = ipController.text;
+                    _serverIp = ip;
+                    _connectToServer();
+                    // Por ejemplo, imprimirlos en consola
+                    print('IP: $ip');
+                  },
+                  child: Text('Conectar'),
+                ),
+              ],
             ),
           ],
         ),
