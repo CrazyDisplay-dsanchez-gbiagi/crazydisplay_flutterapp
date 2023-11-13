@@ -40,6 +40,16 @@ class _FormularioScreenState extends State<FormularioScreen> {
     );
   }
 
+  void _onOpen() {
+    _sendMessage("~FlutterClient");
+  }
+
+  void _sendMessage(String message) {
+    if (_channel != null) {
+      _channel!.sink.add(message);
+    }
+  }
+
   _disconnectFromServer() {
     _channel!.sink.close();
   }
@@ -54,7 +64,7 @@ class _FormularioScreenState extends State<FormularioScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.only(left: 80, right: 80),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -80,25 +90,23 @@ class _FormularioScreenState extends State<FormularioScreen> {
                 ElevatedButton(
                   onPressed: () {
                     // Aqui se puede controlar que hacer con el texto de los campos
-                    final ip = ipController.text;
                     final mensaje = mensajeController.text;
+                    _sendMessage(mensaje);
                     // Por ejemplo, imprimirlos en consola
-                    print('IP: $ip');
                     print('Mensaje: $mensaje');
                   },
                   child: Text('Enviar'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    // Aqui se puede controlar que hacer con el texto de los campos
-                    final ip = ipController.text;
-                    _serverIp = ip;
-                    _connectToServer();
-                    // Por ejemplo, imprimirlos en consola
-                    print('IP: $ip');
-                  },
-                  child: Text('Conectar'),
-                ),
+                    child: Text('Conectar'),
+                    onPressed: () {
+                      // Aqui se puede controlar que hacer con el texto de los campos
+                      final ip = ipController.text;
+                      _serverIp = ip;
+                      _connectToServer();
+                      // Por ejemplo, imprimirlos en consola
+                      print('IP: $ip');
+                    }),
               ],
             ),
           ],
