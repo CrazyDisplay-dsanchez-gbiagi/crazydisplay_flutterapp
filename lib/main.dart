@@ -38,10 +38,12 @@ class _FormularioScreenState extends State<FormularioScreen> {
         final data = jsonDecode(message);
       },
     );
+    _onOpen();
   }
 
   void _onOpen() {
     _sendMessage("~FlutterClient");
+    print("Conectado");
   }
 
   void _sendMessage(String message) {
@@ -98,14 +100,16 @@ class _FormularioScreenState extends State<FormularioScreen> {
                   child: Text('Enviar'),
                 ),
                 ElevatedButton(
-                    child: Text('Conectar'),
+                    child: Text(_channel == null ? 'Conectar' : 'Desconectar'),
                     onPressed: () {
-                      // Aqui se puede controlar que hacer con el texto de los campos
-                      final ip = ipController.text;
-                      _serverIp = ip;
-                      _connectToServer();
-                      // Por ejemplo, imprimirlos en consola
-                      print('IP: $ip');
+                      if (_channel == null) {
+                        final ip = ipController.text;
+                        _serverIp = ip;
+                        _connectToServer();
+                        print('IP: $ip');
+                      } else {
+                        _disconnectFromServer();
+                      }
                     }),
               ],
             ),
