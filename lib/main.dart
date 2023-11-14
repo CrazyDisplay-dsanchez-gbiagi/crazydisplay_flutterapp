@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "CrazyDisplay",
       home: FormularioScreen(),
     );
   }
@@ -62,7 +63,7 @@ class _FormularioScreenState extends State<FormularioScreen> {
       appBar: AppBar(
         title: Center(
           // Centrar el titulo
-          child: Text('Formulario'),
+          child: Text('CrazyDisplay'),
         ),
       ),
       body: Padding(
