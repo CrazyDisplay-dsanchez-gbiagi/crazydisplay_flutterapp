@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:web_socket_channel/io.dart';
 
 void main() {
   runApp(MyApp());
@@ -10,112 +8,126 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "CrazyDisplay",
-      home: FormularioScreen(),
+      home: CrazyDisplay(),
     );
   }
 }
 
-class FormularioScreen extends StatefulWidget {
+class CrazyDisplay extends StatefulWidget {
   @override
-  _FormularioScreenState createState() => _FormularioScreenState();
+  _CrazyDisplayState createState() => _CrazyDisplayState();
 }
 
-class _FormularioScreenState extends State<FormularioScreen> {
-  String _serverIp = 'localhost';
-  String _serverPort = '8888';
-
-  IOWebSocketChannel? _channel;
-
+class _CrazyDisplayState extends State<CrazyDisplay> {
   TextEditingController ipController = TextEditingController();
   TextEditingController mensajeController = TextEditingController();
-
-  void _connectToServer() {
-    String server = "ws://$_serverIp:$_serverPort";
-    _channel = IOWebSocketChannel.connect(server);
-
-    _channel!.stream.listen(
-      (message) {
-        final data = jsonDecode(message);
-      },
-    );
-    _onOpen();
-  }
-
-  void _onOpen() {
-    _sendMessage("~FlutterClient");
-    print("Conectado");
-  }
-
-  void _sendMessage(String message) {
-    if (_channel != null) {
-      _channel!.sink.add(message);
-    }
-  }
-
-  _disconnectFromServer() {
-    _channel!.sink.close();
-  }
+  List<String> messageList = [];
+  bool isConnected = false;
+  bool isSidebarOpen = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          // Centrar el titulo
-          child: Text('CrazyDisplay'),
-        ),
+        title: Text('CrazyDisplay'),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 80, right: 80),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              controller: ipController,
-              decoration: InputDecoration(
-                labelText: 'IP',
-                hintText: 'Ingrese una dirección IP',
+      body: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                    controller: ipController,
+                    decoration: const InputDecoration(
+                      labelText: 'IP',
+                      hintText: 'Ingrese una dirección IP',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextFormField(
+                    controller: mensajeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Mensaje',
+                      hintText: 'Ingrese su mensaje',
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isConnected = !isConnected;
+                          });
+                        },
+                        child: Text(isConnected ? 'Desconectar' : 'Conectar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Implement logic to send the message
+                          String message = mensajeController.text;
+                          if (message.isNotEmpty) {
+                            setState(() {
+                              messageList.add(message);
+                              mensajeController.clear();
+                            });
+                          }
+                        },
+                        child: Text('Enviar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Hola David')));
+                          // Toggle the visibility of the sidebar
+                          setState(() {
+                            isSidebarOpen = !isSidebarOpen;
+                          });
+                        },
+                        child: Text('Mostrar Lista'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: mensajeController,
-              decoration: InputDecoration(
-                labelText: 'Mensaje',
-                hintText: 'Ingrese su mensaje',
-              ),
-            ),
-            SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Aqui se puede controlar que hacer con el texto de los campos
-                    final mensaje = mensajeController.text;
-                    _sendMessage(mensaje);
-                    // Por ejemplo, imprimirlos en consola
-                    print('Mensaje: $mensaje');
-                  },
-                  child: Text('Enviar'),
+          ),
+          if (isSidebarOpen)
+            Container(
+              width: 300, // Adjust the width as needed
+              child: Drawer(
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Lista de mensajes',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Divider(),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: messageList.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(messageList[index]),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                ElevatedButton(
-                    child: Text(_channel == null ? 'Conectar' : 'Desconectar'),
-                    onPressed: () {
-                      if (_channel == null) {
-                        final ip = ipController.text;
-                        _serverIp = ip;
-                        _connectToServer();
-                        print('IP: $ip');
-                      } else {
-                        _disconnectFromServer();
-                      }
-                    }),
-              ],
+              ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
