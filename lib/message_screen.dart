@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class MessageScreen extends StatelessWidget {
@@ -19,6 +21,24 @@ class MessageScreen extends StatelessWidget {
   final TextEditingController mensajeController;
   final Function(String) sendMensajeCallback;
   final Function(String) addMensajeCallback;
+
+  void guardarMensaje() {
+    // Get the path of the document directory
+    //String dir = Directory.current.path;
+
+    // Crear el archivo
+    File file = File('./assets/messages.txt');
+
+    // Abrir el archivo en modo escritura
+    RandomAccessFile raf = file.openSync(mode: FileMode.write);
+
+    // Escribir mensajes en el archivo
+    for (String mensaje in mensajeList) {
+      raf.writeStringSync('$mensaje\n');
+    }
+    // Cerrar archivo
+    raf.closeSync();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,14 +83,22 @@ class MessageScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 25),
-                Flexible(
-                  fit: FlexFit.loose,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      onToggleSidebar();
-                    },
-                    child: Text('Mostrar Lista'),
-                  ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        onToggleSidebar();
+                      },
+                      child: const Text('Mostrar Lista'),
+                    ),
+                    SizedBox(width: 25),
+                    ElevatedButton(
+                      onPressed: () {
+                        guardarMensaje();
+                      },
+                      child: const Text('Guardar Mensajes'),
+                    ),
+                  ],
                 ),
               ],
             ),
