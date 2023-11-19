@@ -26,41 +26,51 @@ class MessageScreen extends StatelessWidget {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(50.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextFormField(
-                  controller: mensajeController,
-                  decoration: const InputDecoration(
-                    labelText: 'Mensaje',
-                    hintText: 'Ingrese su mensaje',
-                  ),
-                ),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    String mensaje = mensajeController.text;
-                    if (mensaje.isNotEmpty) {
-                      sendMensajeCallback(mensaje);
-                      addMensajeCallback(mensaje);
-                      mensajeController.clear();
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Error al enviar el mensaje'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: mensajeController,
+                        decoration: const InputDecoration(
+                          labelText: 'Mensaje',
+                          hintText: 'Ingrese su mensaje',
                         ),
-                      );
-                    }
-                  },
-                  child: const Text('Enviar'),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    FloatingActionButton(
+                      onPressed: () {
+                        String mensaje = mensajeController.text;
+                        if (mensaje.isNotEmpty) {
+                          sendMensajeCallback(mensaje);
+                          addMensajeCallback(mensaje);
+                          mensajeController.clear();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Error al enviar el mensaje'),
+                            ),
+                          );
+                        }
+                      },
+                      child: const Icon(Icons.send),
+                      //child: const Text('Enviar'),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    onToggleSidebar();
-                  },
-                  child: Text('Mostrar Lista'),
+                const SizedBox(height: 25),
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      onToggleSidebar();
+                    },
+                    child: Text('Mostrar Lista'),
+                  ),
                 ),
               ],
             ),
