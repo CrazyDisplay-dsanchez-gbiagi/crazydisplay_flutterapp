@@ -39,24 +39,31 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
     String server = "ws://$_serverIp:$_serverPort";
     _channel = IOWebSocketChannel.connect(server);
 
-    _channel!.stream.listen(
-      (mensaje) {
-        final data = jsonDecode(mensaje);
-      },
-      onError: (error) {
-        print("Error: $error");
-        _channel!.sink.close();
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Error al conectar')));
-      },
-      onDone: () {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Conectado')));
-        setState(() {
-          isConnected = true;
-        });
-      },
-    );
+    // _channel!.stream.listen(
+    //   (mensaje) {
+    //     final data = jsonDecode(mensaje);
+    //     print("Switch");
+    //     print("eh");
+    //     switch (data['type']) {
+    //       case 'message':
+    //         print(data['value']);
+    //         break;
+    //     }
+    //   },
+    //   onError: (error) {
+    //     print("Error: $error");
+    //     _channel!.sink.close();
+    //     ScaffoldMessenger.of(context)
+    //         .showSnackBar(const SnackBar(content: Text('Error al conectar')));
+    //   },
+    //   onDone: () {
+    //     ScaffoldMessenger.of(context)
+    //         .showSnackBar(const SnackBar(content: Text('Conectado')));
+    //     setState(() {
+    //       isConnected = true;
+    //     });
+    //   },
+    // );
   }
 
   void _disconnectFromServer() {
@@ -64,22 +71,76 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
   }
 
   void _login() {
-    // Implement your login logic here
-    // For simplicity, just check if the username and password are not empty
-    if (userController.text.isNotEmpty && passwordController.text.isNotEmpty) {
-      setState(() {
-        isLoggedIn = true;
-        _connectToServer(); // Automatically connect to the server after login
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ingrese un usuario y contraseña')));
+    _connectToServer();
+    print("Conectado al servidor");
+    Future.delayed(const Duration(seconds: 2));
+    // Comprobar usuario y contraseña
+    if (userController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty &&
+        _channel != null) {
+      final message = {
+        'type': 'login',
+        'user': userController.text,
+        'password': passwordController.text,
+      };
+      _channel!.sink.add(jsonEncode(message));
+      print("Esperando respuesta");
+      Future.delayed(const Duration(seconds: 2));
+      _channel!.stream.listen(
+        (mensaje) {
+          final data = jsonDecode(mensaje);
+          if (data['valid'] == true) {
+            final platform = {
+              'type': 'platform',
+              'name': 'Desktop',
+            };
+            _channel!.sink.add(jsonEncode(platform));
+            print("Login correcto");
+            setState(() {
+              isLoggedIn = true;
+            });
+          } else if (data['valid'] == false) {
+            print("Login incorrecto");
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Usuario o contraseña incorrecta')));
+          }
+        },
+        onError: (error) {
+          print("Error: $error");
+          _channel!.sink.close();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Error al conectar')));
+        },
+        onDone: () {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Conectado')));
+          setState(() {
+            isConnected = true;
+          });
+        },
+      );
     }
   }
 
   void _sendMensaje(String mensaje) {
     if (_channel != null) {
-      _channel!.sink.add(mensaje);
+      final message = {
+        'type': 'message',
+        'value': mensaje,
+        'format': 'text',
+      };
+      _channel!.sink.add(jsonEncode(message));
+    }
+  }
+
+  void _sendImage(String imageString) {
+    if (_channel != null) {
+      final message = {
+        'type': 'message',
+        'value': imageString,
+        'format': 'img'
+      };
+      _channel!.sink.add(jsonEncode(message));
     }
   }
 
