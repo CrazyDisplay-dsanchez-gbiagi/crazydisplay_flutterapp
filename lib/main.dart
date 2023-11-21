@@ -11,6 +11,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          // Set the primary color
+          colorScheme:
+              ColorScheme.fromSwatch(primarySwatch: Colors.deepOrange)),
       home: CrazyDisplay(),
     );
   }

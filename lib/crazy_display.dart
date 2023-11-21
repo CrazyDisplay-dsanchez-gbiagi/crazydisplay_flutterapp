@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import 'login_screen.dart';
 import 'message_screen.dart';
+import 'message.dart';
 
 class CrazyDisplay extends StatefulWidget {
   const CrazyDisplay({Key? key});
@@ -19,11 +20,11 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
   IOWebSocketChannel? _channel;
 
   TextEditingController ipController = TextEditingController();
-  TextEditingController mensajeController = TextEditingController();
+  TextEditingController messageController = TextEditingController();
   TextEditingController userController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  List<String> mensajeList = [];
+  List<Message> messageList = [];
   bool isConnected = false;
   bool isSidebarOpen = false;
   bool isLoggedIn = false;
@@ -38,32 +39,6 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
     _serverIp = ipController.text;
     String server = "ws://$_serverIp:$_serverPort";
     _channel = IOWebSocketChannel.connect(server);
-
-    // _channel!.stream.listen(
-    //   (mensaje) {
-    //     final data = jsonDecode(mensaje);
-    //     print("Switch");
-    //     print("eh");
-    //     switch (data['type']) {
-    //       case 'message':
-    //         print(data['value']);
-    //         break;
-    //     }
-    //   },
-    //   onError: (error) {
-    //     print("Error: $error");
-    //     _channel!.sink.close();
-    //     ScaffoldMessenger.of(context)
-    //         .showSnackBar(const SnackBar(content: Text('Error al conectar')));
-    //   },
-    //   onDone: () {
-    //     ScaffoldMessenger.of(context)
-    //         .showSnackBar(const SnackBar(content: Text('Conectado')));
-    //     setState(() {
-    //       isConnected = true;
-    //     });
-    //   },
-    // );
   }
 
   void _disconnectFromServer() {
@@ -146,13 +121,16 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
 
   void addMensaje(String mensaje) {
     bool repetido = false;
-    for (int i = 0; i < mensajeList.length; i++) {
-      if (mensajeList[i] == mensaje) {
+    for (int i = 0; i < messageList.length; i++) {
+      if (messageList[i] == mensaje) {
         repetido = true;
       }
     }
     if (!repetido) {
-      mensajeList.add(mensaje);
+      DateTime currentDate = DateTime.now();
+      messageList.add(
+          "${currentDate.year}-${currentDate.month}-${currentDate.day} ${currentDate.hour}:${currentDate.minute}:${currentDate.second}",
+          mensaje);
     }
   }
 
@@ -167,13 +145,13 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
           ? MessageScreen(
               isConnected: isConnected,
               isSidebarOpen: isSidebarOpen,
-              mensajeList: mensajeList,
+              messageList: messageList,
               onToggleSidebar: () {
                 setState(() {
                   isSidebarOpen = !isSidebarOpen;
                 });
               },
-              mensajeController: mensajeController,
+              mensajeController: messageController,
               sendMensajeCallback: _sendMensaje,
               addMensajeCallback: addMensaje,
             )

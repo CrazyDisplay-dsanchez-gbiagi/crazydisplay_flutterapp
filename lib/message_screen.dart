@@ -7,7 +7,7 @@ class MessageScreen extends StatelessWidget {
     Key? key,
     required this.isConnected,
     required this.isSidebarOpen,
-    required this.mensajeList,
+    required this.messageList,
     required this.onToggleSidebar,
     required this.mensajeController,
     required this.sendMensajeCallback,
@@ -16,7 +16,7 @@ class MessageScreen extends StatelessWidget {
 
   final bool isConnected;
   final bool isSidebarOpen;
-  final List<String> mensajeList;
+  final List<String> messageList;
   final VoidCallback onToggleSidebar;
   final TextEditingController mensajeController;
   final Function(String) sendMensajeCallback;
@@ -33,7 +33,7 @@ class MessageScreen extends StatelessWidget {
     RandomAccessFile raf = file.openSync(mode: FileMode.write);
 
     // Escribir mensajes en el archivo
-    for (String mensaje in mensajeList) {
+    for (String mensaje in messageList) {
       raf.writeStringSync('$mensaje\n');
     }
     // Cerrar archivo
@@ -109,26 +109,28 @@ class MessageScreen extends StatelessWidget {
             width: 300,
             child: Drawer(
               child: Container(
-                padding: const EdgeInsets.all(50.0),
+                padding: const EdgeInsets.all(15.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Lista de mensajes',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    const Center(
+                      child: Text(
+                        'Lista de mensajes',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     Divider(),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: mensajeList.length,
+                        itemCount: messageList.length,
                         itemBuilder: (context, index) {
                           return ListTile(
-                            title: Text(mensajeList[index]),
+                            title: Text(messageList[index]),
                             onTap: () {
-                              print('Item clicked: ${mensajeList[index]}');
+                              print('Item clicked: ${messageList[index]}');
                             },
                           );
                         },
