@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crazydisplay_flutterapp/message.dart';
 import 'package:flutter/material.dart';
 
 class MessageScreen extends StatelessWidget {
@@ -16,16 +17,13 @@ class MessageScreen extends StatelessWidget {
 
   final bool isConnected;
   final bool isSidebarOpen;
-  final List<String> messageList;
+  final List<Message> messageList;
   final VoidCallback onToggleSidebar;
   final TextEditingController mensajeController;
   final Function(String) sendMensajeCallback;
   final Function(String) addMensajeCallback;
 
   void guardarMensaje() {
-    // Get the path of the document directory
-    //String dir = Directory.current.path;
-
     // Crear el archivo
     File file = File('./assets/messages.txt');
 
@@ -33,11 +31,33 @@ class MessageScreen extends StatelessWidget {
     RandomAccessFile raf = file.openSync(mode: FileMode.write);
 
     // Escribir mensajes en el archivo
-    for (String mensaje in messageList) {
+    for (Message mensaje in messageList) {
       raf.writeStringSync('$mensaje\n');
     }
     // Cerrar archivo
     raf.closeSync();
+  }
+
+  void recuperarMensajes() async {
+    // Lee el archivo y obtiene su contenido como una lista de líneas
+    List<String> lines = await File("./assets/messages.txt").readAsLines();
+
+    // Itera sobre cada línea del archivo
+    for (String line in lines) {
+      // Divide la línea en partes usando el punto y coma como separador
+      List<String> parts = line.split('; ');
+
+      // Asegurar que la línea tenga el formato esperado
+      if (parts.length == 2) {
+        // Obtiene la fecha y el mensaje
+        String date = parts[0];
+        String messageText = parts[1];
+
+        // Crea un objeto Message y agrega a la lista
+        Message message = Message(date, messageText);
+        messageList.add(message);
+      }
+    }
   }
 
   @override
@@ -61,7 +81,7 @@ class MessageScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     FloatingActionButton(
                       onPressed: () {
                         String mensaje = mensajeController.text;
@@ -78,7 +98,6 @@ class MessageScreen extends StatelessWidget {
                         }
                       },
                       child: const Icon(Icons.send),
-                      //child: const Text('Enviar'),
                     ),
                   ],
                 ),
@@ -91,7 +110,7 @@ class MessageScreen extends StatelessWidget {
                       },
                       child: const Text('Mostrar Lista'),
                     ),
-                    SizedBox(width: 25),
+                    const SizedBox(width: 25),
                     ElevatedButton(
                       onPressed: () {
                         guardarMensaje();
@@ -122,14 +141,47 @@ class MessageScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Divider(),
+                    const Divider(),
                     Expanded(
                       child: ListView.builder(
                         itemCount: messageList.length,
                         itemBuilder: (context, index) {
                           return ListTile(
-                            title: Text(messageList[index]),
+                            // Mostrar solo el mensaje  y no la hora.
+
+                            title: Text(messageList[index].getMessage()),
                             onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Confirmar envío'),
+                                    content: const Text(
+                                        '¿Estás seguro de enviar este mensaje?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Cerrar el diálogo
+                                        },
+                                        child: Text('Cancelar'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Cerrar el diálogo
+                                          // Lógica para enviar el mensaje
+                                          sendMensajeCallback(
+                                              messageList[index].getMessage());
+                                          print(
+                                              'Mensaje enviado: ${messageList[index]}');
+                                        },
+                                        child: Text('Aceptar'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                               print('Item clicked: ${messageList[index]}');
                             },
                           );

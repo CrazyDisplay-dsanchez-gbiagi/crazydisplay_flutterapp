@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
@@ -28,6 +29,12 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
   bool isConnected = false;
   bool isSidebarOpen = false;
   bool isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    recuperarMensajes();
+  }
 
   void _connectToServer() {
     print(ipController.text);
@@ -122,15 +129,45 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
   void addMensaje(String mensaje) {
     bool repetido = false;
     for (int i = 0; i < messageList.length; i++) {
-      if (messageList[i] == mensaje) {
+      if (messageList[i].getMessage() == mensaje) {
         repetido = true;
       }
     }
     if (!repetido) {
       DateTime currentDate = DateTime.now();
-      messageList.add(
-          "${currentDate.year}-${currentDate.month}-${currentDate.day} ${currentDate.hour}:${currentDate.minute}:${currentDate.second}",
-          mensaje);
+      String date =
+          "${currentDate.year}-${currentDate.month}-${currentDate.day} ${currentDate.hour}:${currentDate.minute}:${currentDate.second}";
+      messageList.add(Message(date, mensaje));
+    }
+  }
+
+  void recuperarMensajes() async {
+    String filePath = "./assets/messages.txt";
+    // Lee el archivo y obtiene su contenido como una lista de líneas
+    List<String> lines = await File(filePath).readAsLines();
+
+    // Verificar si el archivo existe
+    File file = File(filePath);
+    if (!(await file.exists())) {
+      print("No hay mensajes para recuperar");
+      return;
+    }
+
+    // Itera sobre cada línea del archivo
+    for (String line in lines) {
+      // Divide la línea en partes usando el punto y coma como separador
+      List<String> parts = line.split('; ');
+
+      // Asegurar que la línea tenga el formato esperado
+      if (parts.length == 2) {
+        // Obtiene la fecha y el mensaje
+        String date = parts[0];
+        String messageText = parts[1];
+
+        // Crea un objeto Message y agrega a la lista
+        Message message = Message(date, messageText);
+        messageList.add(message);
+      }
     }
   }
 
