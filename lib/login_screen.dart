@@ -17,7 +17,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(25.0),
+      padding: const EdgeInsets.all(150.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -45,11 +45,17 @@ class LoginScreen extends StatelessWidget {
               hintText: 'Ingrese su contraseña',
             ),
           ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onLogin,
-            child: const Text('Iniciar sesión'),
-          ),
+          SizedBox(height: 20),
+          Row(children: [
+            SizedBox(
+              width: 400.0,
+              height: 50,
+            ),
+            ElevatedButton(
+              onPressed: onLogin,
+              child: const Text('Iniciar sesión'),
+            ),
+          ]),
         ],
       ),
     );

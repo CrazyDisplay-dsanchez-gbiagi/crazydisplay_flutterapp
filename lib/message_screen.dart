@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:crazydisplay_flutterapp/message.dart';
+import 'package:CrazyDisplay/message.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class MessageScreen extends StatelessWidget {
@@ -116,6 +117,18 @@ class MessageScreen extends StatelessWidget {
                         guardarMensaje();
                       },
                       child: const Text('Guardar Mensajes'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final result = await FilePicker.platform.pickFiles();
+
+                        if (result != null) {
+                          File file = File(result.files.single.path!);
+                        } else {
+                          print("No hay imagen");
+                        }
+                      },
+                      child: const Text('Enviar imagen'),
                     ),
                   ],
                 ),
