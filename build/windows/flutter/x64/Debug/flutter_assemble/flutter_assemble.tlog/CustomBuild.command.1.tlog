@@ -1,0 +1,28 @@
+^Z:\1-PRACTICAS CLASE\DAM_2\CRAZYDISPLAY\CRAZYDISPLAY_FLUTTERAPP\BUILD\WINDOWS\CMAKEFILES\9416D428C8412979F818809993D2F92D\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env FLUTTER_ROOT=F:\Flutter\flutter "PROJECT_DIR=Z:\1-Practicas clase\DAM_2\CrazyDisplay\crazydisplay_flutterapp" FLUTTER_ROOT=F:\Flutter\flutter "FLUTTER_EPHEMERAL_DIR=Z:\1-Practicas clase\DAM_2\CrazyDisplay\crazydisplay_flutterapp\windows\flutter\ephemeral" "PROJECT_DIR=Z:\1-Practicas clase\DAM_2\CrazyDisplay\crazydisplay_flutterapp" "FLUTTER_TARGET=Z:\1-Practicas clase\DAM_2\CrazyDisplay\crazydisplay_flutterapp\lib\main.dart" DART_DEFINES=RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ==,RkxVVFRFUl9XRUJfQ0FOVkFTS0lUX1VSTD1odHRwczovL3d3dy5nc3RhdGljLmNvbS9mbHV0dGVyLWNhbnZhc2tpdC8wNTQ1Zjg3MDVkZjMwMTg3N2Q3ODcxMDdiYWMxYTZlOWZjOWVlMWFkLw== DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false "PACKAGE_CONFIG=Z:\1-Practicas clase\DAM_2\CrazyDisplay\crazydisplay_flutterapp\.dart_tool\package_config.json" F:/Flutter/flutter/packages/flutter_tools/bin/tool_backend.bat windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^Z:\1-PRACTICAS CLASE\DAM_2\CRAZYDISPLAY\CRAZYDISPLAY_FLUTTERAPP\BUILD\WINDOWS\CMAKEFILES\FC62774CE70778FB7321FF8130D5BBE6\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^Z:\1-PRACTICAS CLASE\DAM_2\CRAZYDISPLAY\CRAZYDISPLAY_FLUTTERAPP\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" "-SZ:/1-Practicas clase/DAM_2/CrazyDisplay/crazydisplay_flutterapp/windows" "-BZ:/1-Practicas clase/DAM_2/CrazyDisplay/crazydisplay_flutterapp/build/windows" --check-stamp-file "Z:/1-Practicas clase/DAM_2/CrazyDisplay/crazydisplay_flutterapp/build/windows/flutter/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

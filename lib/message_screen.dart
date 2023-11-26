@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:CrazyDisplay/message.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class MessageScreen extends StatelessWidget {
   const MessageScreen({
@@ -10,19 +11,25 @@ class MessageScreen extends StatelessWidget {
     required this.isConnected,
     required this.isSidebarOpen,
     required this.messageList,
+    required this.imageList,
     required this.onToggleSidebar,
     required this.mensajeController,
     required this.sendMensajeCallback,
     required this.addMensajeCallback,
+    required this.sendImagenCallback,
+    required this.addImagenCallback,
   }) : super(key: key);
 
   final bool isConnected;
   final bool isSidebarOpen;
   final List<Message> messageList;
+  final List<String> imageList;
   final VoidCallback onToggleSidebar;
   final TextEditingController mensajeController;
   final Function(String) sendMensajeCallback;
   final Function(String) addMensajeCallback;
+  final Function(String) sendImagenCallback;
+  final Function(String) addImagenCallback;
 
   void guardarMensaje() {
     // Crear el archivo
@@ -106,10 +113,35 @@ class MessageScreen extends StatelessWidget {
                 Row(
                   children: [
                     ElevatedButton(
+                      onPressed: () async {
+                        final result = await FilePicker.platform.pickFiles(
+                            type: FileType.custom, allowedExtensions: ['png']);
+
+                        if (result != null) {
+                          File image = File(result.files.single.path!);
+                          List<int> imageBytes = image.readAsBytesSync();
+                          String imageString = base64Encode(imageBytes);
+                          sendImagenCallback(imageString);
+                          addImagenCallback(imageString);
+                        } else {
+                          print("No hay imagen");
+                        }
+                      },
+                      child: const Text('Enviar imagen'),
+                    ),
+                    const SizedBox(width: 25),
+                    ElevatedButton(
                       onPressed: () {
                         onToggleSidebar();
                       },
-                      child: const Text('Mostrar Lista'),
+                      child: const Text('Lista Mensajes'),
+                    ),
+                    const SizedBox(width: 25),
+                    ElevatedButton(
+                      onPressed: () {
+                        onToggleSidebar();
+                      },
+                      child: const Text('Galeria'),
                     ),
                     const SizedBox(width: 25),
                     ElevatedButton(
@@ -118,20 +150,41 @@ class MessageScreen extends StatelessWidget {
                       },
                       child: const Text('Guardar Mensajes'),
                     ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final result = await FilePicker.platform.pickFiles();
-
-                        if (result != null) {
-                          File file = File(result.files.single.path!);
-                        } else {
-                          print("No hay imagen");
-                        }
-                      },
-                      child: const Text('Enviar imagen'),
-                    ),
                   ],
                 ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey, width: 1.0),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 5,
+                        ),
+                        itemCount: imageList.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              print('Image clicked: $index');
+                            },
+                            child: Image.memory(
+                              base64Decode(imageList[index]),
+                              fit: BoxFit.cover,
+                              height: 30.0,
+                              width: 30.0,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -177,7 +230,7 @@ class MessageScreen extends StatelessWidget {
                                           Navigator.of(context)
                                               .pop(); // Cerrar el diálogo
                                         },
-                                        child: Text('Cancelar'),
+                                        child: const Text('Cancelar'),
                                       ),
                                       TextButton(
                                         onPressed: () {
@@ -189,7 +242,7 @@ class MessageScreen extends StatelessWidget {
                                           print(
                                               'Mensaje enviado: ${messageList[index]}');
                                         },
-                                        child: Text('Aceptar'),
+                                        child: const Text('Aceptar'),
                                       ),
                                     ],
                                   );

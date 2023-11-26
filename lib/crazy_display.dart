@@ -26,6 +26,7 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
   TextEditingController passwordController = TextEditingController();
 
   List<Message> messageList = [];
+  List<String> imageList = [];
   bool isConnected = false;
   bool isSidebarOpen = false;
   bool isLoggedIn = false;
@@ -120,7 +121,8 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
       final message = {
         'type': 'message',
         'value': imageString,
-        'format': 'img'
+        'format': 'img',
+        'ext': 'png',
       };
       _channel!.sink.add(jsonEncode(message));
     }
@@ -138,7 +140,13 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
       String date =
           "${currentDate.year}-${currentDate.month}-${currentDate.day} ${currentDate.hour}:${currentDate.minute}:${currentDate.second}";
       messageList.add(Message(date, mensaje));
+      setState(() {});
     }
+  }
+
+  void addImage(String imageString) {
+    imageList.add(imageString);
+    setState(() {});
   }
 
   void recuperarMensajes() async {
@@ -183,6 +191,7 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
               isConnected: isConnected,
               isSidebarOpen: isSidebarOpen,
               messageList: messageList,
+              imageList: imageList,
               onToggleSidebar: () {
                 setState(() {
                   isSidebarOpen = !isSidebarOpen;
@@ -191,6 +200,8 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
               mensajeController: messageController,
               sendMensajeCallback: _sendMensaje,
               addMensajeCallback: addMensaje,
+              sendImagenCallback: _sendImage,
+              addImagenCallback: addImage,
             )
           : LoginScreen(
               ipController: ipController,
