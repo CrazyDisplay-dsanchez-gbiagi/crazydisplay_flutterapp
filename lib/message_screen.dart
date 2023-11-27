@@ -165,13 +165,13 @@ class MessageScreen extends StatelessWidget {
                       },
                       child: const Text('Lista Mensajes'),
                     ),
-                    const SizedBox(width: 25),
-                    ElevatedButton(
-                      onPressed: () {
-                        onToggleSidebar();
-                      },
-                      child: const Text('Galeria'),
-                    ),
+                    // const SizedBox(width: 25),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    // Ocultar galeria?
+                    //   },
+                    //   child: const Text('Galeria'),
+                    // ),
                     const SizedBox(width: 25),
                     ElevatedButton(
                       onPressed: () {
