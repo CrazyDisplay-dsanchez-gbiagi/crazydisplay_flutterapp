@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:CrazyDisplay/imagen_enviada.dart';
 import 'package:CrazyDisplay/message.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
@@ -23,13 +25,13 @@ class MessageScreen extends StatelessWidget {
   final bool isConnected;
   final bool isSidebarOpen;
   final List<Message> messageList;
-  final List<String> imageList;
+  final List<ImagenEnviada> imageList;
   final VoidCallback onToggleSidebar;
   final TextEditingController mensajeController;
   final Function(String) sendMensajeCallback;
   final Function(String) addMensajeCallback;
-  final Function(String) sendImagenCallback;
-  final Function(String) addImagenCallback;
+  final Function(String, String) sendImagenCallback;
+  final Function(String, String) addImagenCallback;
 
   void guardarMensaje() {
     // Crear el archivo
@@ -65,6 +67,30 @@ class MessageScreen extends StatelessWidget {
         Message message = Message(date, messageText);
         messageList.add(message);
       }
+    }
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    try {
+      final XFile? pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 100,
+      );
+
+      if (pickedFile != null) {
+        File image = File(pickedFile.path);
+        String extension = image.path.split('.').last;
+        List<int> imageBytes = await image.readAsBytes();
+        String imageString = base64Encode(imageBytes);
+        print("Imagen seleccionada: $imageString");
+        sendImagenCallback(imageString, extension);
+        addImagenCallback(imageString, extension);
+      } else {
+        print("No hay imagen");
+      }
+    } catch (e) {
+      print("Error picking image: $e");
     }
   }
 
@@ -113,19 +139,22 @@ class MessageScreen extends StatelessWidget {
                 Row(
                   children: [
                     ElevatedButton(
-                      onPressed: () async {
-                        final result = await FilePicker.platform.pickFiles(
-                            type: FileType.custom, allowedExtensions: ['png']);
+                      onPressed: () {
+                        pickImage();
 
-                        if (result != null) {
-                          File image = File(result.files.single.path!);
-                          List<int> imageBytes = image.readAsBytesSync();
-                          String imageString = base64Encode(imageBytes);
-                          sendImagenCallback(imageString);
-                          addImagenCallback(imageString);
-                        } else {
-                          print("No hay imagen");
-                        }
+                        // Este codigo funciona solo en windows?
+                        // final result = await FilePicker.platform.pickFiles(
+                        //     type: FileType.custom, allowedExtensions: ['png']);
+
+                        // if (result != null) {
+                        //   File image = File(result.files.single.path!);
+                        //   List<int> imageBytes = image.readAsBytesSync();
+                        //   String imageString = base64Encode(imageBytes);
+                        //   sendImagenCallback(imageString);
+                        //   addImagenCallback(imageString);
+                        // } else {
+                        //   print("No hay imagen");
+                        // }
                       },
                       child: const Text('Enviar imagen'),
                     ),
@@ -171,13 +200,45 @@ class MessageScreen extends StatelessWidget {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Confirmar envío'),
+                                    content: const Text(
+                                        '¿Estás seguro de reenviar esta imagen?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Cerrar el diálogo
+                                        },
+                                        child: const Text('Cancelar'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context)
+                                              .pop(); // Cerrar el diálogo
+                                          // Lógica para enviar el mensaje
+                                          sendImagenCallback(
+                                              imageList[index].getImageString(),
+                                              imageList[index].getExtension());
+                                          print(
+                                              'Mensaje enviado: ${messageList[index]}');
+                                        },
+                                        child: const Text('Aceptar'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                               print('Image clicked: $index');
                             },
                             child: Image.memory(
-                              base64Decode(imageList[index]),
+                              base64Decode(imageList[index].getImageString()),
                               fit: BoxFit.cover,
-                              height: 30.0,
-                              width: 30.0,
+                              height: 20.0,
+                              width: 20.0,
                             ),
                           );
                         },

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:CrazyDisplay/imagen_enviada.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
 import 'login_screen.dart';
@@ -26,7 +27,7 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
   TextEditingController passwordController = TextEditingController();
 
   List<Message> messageList = [];
-  List<String> imageList = [];
+  List<ImagenEnviada> imageList = [];
   bool isConnected = false;
   bool isSidebarOpen = false;
   bool isLoggedIn = false;
@@ -116,13 +117,13 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
     }
   }
 
-  void _sendImage(String imageString) {
+  void _sendImage(String imageString, String extension) {
     if (_channel != null) {
       final message = {
         'type': 'message',
         'value': imageString,
         'format': 'img',
-        'ext': 'png',
+        'ext': extension,
       };
       _channel!.sink.add(jsonEncode(message));
     }
@@ -144,8 +145,8 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
     }
   }
 
-  void addImage(String imageString) {
-    imageList.add(imageString);
+  void addImage(String imageString, String extension) {
+    imageList.add(ImagenEnviada(imageString, extension));
     setState(() {});
   }
 
