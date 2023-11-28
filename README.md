@@ -1,16 +1,9 @@
-# crazydisplay_flutterapp
+# CrazyDisplay - Desktop App
 
-A new Flutter project.
+Send messages & images through websockets to a local server.
 
-## Getting Started
+## Authors
 
-This project is a starting point for a Flutter application.
+- Geanfranco Biagi - [@gbiagi](https://www.github.com/gbiagi)
+- David Sanchez - [@MatillaSan](https://www.github.com/MatillaSan)
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
