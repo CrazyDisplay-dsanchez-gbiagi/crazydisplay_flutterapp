@@ -151,7 +151,7 @@ class _CrazyDisplayState extends State<CrazyDisplay> {
   }
 
   void recuperarMensajes() async {
-    String filePath = "./assets/messages.txt";
+    String filePath = "./lib/assets/messages.txt";
     // Lee el archivo y obtiene su contenido como una lista de líneas
     List<String> lines = await File(filePath).readAsLines();
 

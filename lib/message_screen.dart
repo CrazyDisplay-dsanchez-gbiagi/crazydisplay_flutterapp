@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:CrazyDisplay/imagen_enviada.dart';
 import 'package:CrazyDisplay/message.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -35,7 +34,7 @@ class MessageScreen extends StatelessWidget {
 
   void guardarMensaje() {
     // Crear el archivo
-    File file = File('./assets/messages.txt');
+    File file = File('./lib/assets/messages.txt');
 
     // Abrir el archivo en modo escritura
     RandomAccessFile raf = file.openSync(mode: FileMode.write);
@@ -83,9 +82,9 @@ class MessageScreen extends StatelessWidget {
         String extension = image.path.split('.').last;
         List<int> imageBytes = await image.readAsBytes();
         String imageString = base64Encode(imageBytes);
-        print("Imagen seleccionada: $imageString");
         sendImagenCallback(imageString, extension);
         addImagenCallback(imageString, extension);
+        print("Imagen enviada");
       } else {
         print("No hay imagen");
       }
